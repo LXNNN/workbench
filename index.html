@@ -169,9 +169,6 @@ body::before{
 .btn-danger-ghost:hover{background:rgba(224,90,72,.15)}
 .btn-sm{padding:7px 13px;font-size:12.5px;border-radius:10px}
 .btn-block{width:100%;display:block}
-.backup-card{border:1px solid rgba(34,122,63,.12)}
-.backup-btns{display:flex;gap:10px}
-.backup-btns .btn{flex:1;text-align:center;font-size:13.5px}
 .add-note-btn{
   display:block;width:100%;margin:0 0 14px;
   padding:12px;font-size:13.5px;font-weight:600;
@@ -497,15 +494,6 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
         <button class="btn btn-primary btn-block" id="addTaskBtn" style="margin-top:10px">＋ 新增任务</button>
       </div>
 
-      <div class="card backup-card">
-        <div class="card-title"><span class="bar"></span>数据备份与恢复</div>
-        <p style="font-size:11.5px;color:var(--text-sub);margin-bottom:12px">重装 PWA 会清空本机数据。重装前先<b>导出备份</b>存到手机文件/网盘，重装后<b>导入备份</b>即可找回全部内容。</p>
-        <div class="backup-btns">
-          <button class="btn btn-ghost" id="backupExportBtn">📤 导出备份</button>
-          <button class="btn btn-ghost" id="backupImportBtn">📥 导入备份</button>
-        </div>
-        <input type="file" id="backupFile" accept="application/json,.json" hidden>
-      </div>
     </section>
 
     <!-- ========== 爆款视频 ========== -->
@@ -1494,47 +1482,8 @@ function init(){
   requestNotify();
   checkMorningRemind();
 
-  /* 数据备份 / 恢复：重装 PWA 前导出，重装后导入即可找回本地数据 */
-  $("#backupExportBtn").addEventListener("click", exportBackup);
-  $("#backupImportBtn").addEventListener("click", () => $("#backupFile").click());
-  $("#backupFile").addEventListener("change", (e) => {
-    const f = e.target.files && e.target.files[0];
-    if (f) importBackup(f);
-    e.target.value = "";
-  });
 }
-function exportBackup(){
-  const data = {};
-  for (let i = 0; i < localStorage.length; i++){
-    const k = localStorage.key(i);
-    if (k && k.indexOf("ws_") === 0) data[k] = localStorage.getItem(k);
-  }
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const d = new Date();
-  const pad = n => String(n).padStart(2, "0");
-  a.href = url;
-  a.download = "workbench-backup-" + d.getFullYear() + pad(d.getMonth()+1) + pad(d.getDate()) + ".json";
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
-  toast("备份已生成，请保存到手机文件或网盘 📁");
-}
-function importBackup(file){
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    try {
-      const data = JSON.parse(ev.target.result);
-      let n = 0;
-      for (const k in data){
-        if (k.indexOf("ws_") === 0){ localStorage.setItem(k, data[k]); n++; }
-      }
-      toast("已恢复 " + n + " 项数据，正在刷新…");
-      setTimeout(() => location.reload(), 800);
-    } catch (err){ toast("备份文件格式错误，请选择导出的 json"); }
-  };
-  reader.readAsText(file);
-}
+
 init();
 </script>
 <script>
