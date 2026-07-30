@@ -96,6 +96,15 @@ body::before{
 .nav-dot.show{display:block}
 @keyframes dotPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 .sidebar-foot{margin-top:auto;padding:16px 10px;font-size:11px;color:rgba(255,255,255,.4);line-height:1.7;text-align:center}
+.side-ops{display:flex;flex-direction:row;gap:8px;padding:6px 0 4px}
+.side-btn{
+  flex:1;min-width:0;padding:8px 6px;border:1px solid rgba(255,255,255,.18);
+  border-radius:10px;background:rgba(255,255,255,.07);color:rgba(255,255,255,.85);
+  font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;
+  transition:background .2s,transform .12s;text-align:center;white-space:nowrap;
+}
+.side-btn:hover{background:rgba(255,255,255,.18)}
+.side-btn:active{transform:scale(.98)}
 /* 主区 */
 .main{flex:1;margin-left:260px;padding:22px clamp(18px,3vw,40px) 80px;min-width:0;max-width:900px}
 .topbar{display:none;align-items:center;gap:10px;margin-bottom:6px;padding:4px 0}
@@ -382,6 +391,25 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .diary-time{font-size:12px;color:var(--text-light)}
 .diary-foot .icon-btn{margin-left:auto}
 .book-name{font-size:15.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text-main)}
+/* 软笔书法学习卡片 */
+.calli-card{
+  display:flex;gap:11px;background:#fff;border-radius:var(--radius-lg);
+  box-shadow:var(--shadow-md);padding:9px;margin-bottom:11px;
+  border:1px solid rgba(34,122,63,.06);animation:fadeUp .3s ease both;
+}
+.calli-thumb{
+  width:80px;height:80px;flex-shrink:0;border-radius:10px;overflow:hidden;
+  background:var(--green-bg);display:flex;align-items:center;justify-content:center;cursor:pointer;
+}
+.calli-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.calli-thumb.empty-thumb{font-size:26px;color:var(--green-pale)}
+.calli-info{flex:1;min-width:0;display:flex;flex-direction:column}
+.calli-font{font-size:15px;font-weight:700;color:var(--text-main);display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:7px}
+.calli-font .tag{font-size:11px;padding:3px 9px}
+.calli-copy{font-size:13px;line-height:1.6;color:var(--text-main);margin-bottom:7px;word-break:break-all}
+.calli-foot{display:flex;align-items:center;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(34,122,63,.08)}
+.calli-foot .icon-btn{margin-left:auto}
+.calli-foot .icon-btn{padding:5px 7px;font-size:14px}
 .quote-block{
   background:var(--green-bg);border-left:3px solid var(--green-mid);
   border-radius:8px;padding:11px 13px;font-size:13.5px;line-height:1.7;color:var(--text-main);
@@ -437,6 +465,12 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <div class="nav-item" data-page="diary"><span class="ico">💡</span>灵感日记</div>
     <div class="nav-item" data-page="sport"><span class="ico">🏃</span>运动健身</div>
     <div class="nav-item" data-page="read"><span class="ico">📖</span>每日阅读</div>
+    <div class="nav-item" data-page="calli"><span class="ico">🖌️</span>软笔书法学习</div>
+    <div class="side-ops">
+      <button class="side-btn" id="exportBtn">⬇️ 导出数据</button>
+      <button class="side-btn" id="importBtn">⬆️ 导入数据</button>
+      <input type="file" id="importFile" accept="application/json,.json" style="display:none">
+    </div>
     <div class="sidebar-foot">数据仅存储在本机浏览器<br>私密安全 · 自动保存</div>
   </aside>
   <div class="overlay" id="overlay"></div>
@@ -554,6 +588,13 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
       <button class="btn btn-primary add-note-btn" id="readAddBtn">✏️ 新增笔记</button>
       <div id="readList"></div>
     </section>
+
+    <!-- ========== 软笔书法学习 ========== -->
+    <section class="page" id="page-calli">
+      <div class="page-head"><h2>🖌️ 软笔书法学习</h2><p>记录每一次提按转折，留住笔墨间的静气</p></div>
+      <button class="btn btn-primary add-note-btn" id="calliAddBtn">＋ 新增练习</button>
+      <div id="calliList"></div>
+    </section>
   </main>
 </div>
 
@@ -599,6 +640,41 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <div class="row" style="margin-top:18px">
       <button class="btn btn-ghost grow" data-close>取消</button>
       <button class="btn btn-primary grow" id="sportSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 书法练习弹窗 -->
+<div class="modal-mask" id="calliModal">
+  <div class="modal">
+    <h3>🖌️ 新增书法练习</h3>
+    <div class="field">
+      <label>字体 *</label>
+      <select id="calliFont">
+        <option value="楷书">楷书</option>
+        <option value="行书">行书</option>
+        <option value="隶书">隶书</option>
+        <option value="篆书">篆书</option>
+        <option value="草书">草书</option>
+        <option value="其他">其他</option>
+      </select>
+    </div>
+    <div class="field"><label>练习时长（分钟）*</label><input type="number" id="calliDur" min="1" placeholder="如：40"></div>
+    <div class="field"><label>临摹书帖</label><input type="text" id="calliCopy" placeholder="如：颜真卿《多宝塔碑》"></div>
+    <div class="field"><label>上传图片</label><input type="file" id="calliImg" accept="image/*"></div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn btn-ghost grow" data-close>取消</button>
+      <button class="btn btn-primary grow" id="calliSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 图片放大弹窗 -->
+<div class="modal-mask" id="imgModal">
+  <div class="modal" style="max-width:92vw">
+    <img id="imgModalImg" src="" alt="预览" style="width:100%;max-height:75vh;object-fit:contain;border-radius:12px;display:block;background:#f3f3f3">
+    <div class="row" style="margin-top:14px">
+      <button class="btn btn-ghost grow" data-close>关闭</button>
     </div>
   </div>
 </div>
@@ -672,7 +748,7 @@ function askConfirm(text, cb, btnOpt){
 $("#confirmOk").addEventListener("click", ()=>{ closeModal("#confirmModal"); if(confirmCb) confirmCb(); });
 
 /* ================= 导航 ================= */
-const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"每日阅读"};
+const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"每日阅读", calli:"软笔书法学习"};
 function switchPage(name){
   $$(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.page===name));
   $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-"+name));
@@ -1354,6 +1430,148 @@ $("#readSaveBtn").addEventListener("click", ()=>{
   renderReads(); toast("阅读笔记已保存 ✓");
 });
 
+/* ================= 软笔书法学习 ================= */
+let callis = store.get("callis", []);
+function saveCallis(){ store.set("callis", callis); }
+/* 将上传图片压缩为 dataURL，避免撑爆 localStorage 配额 */
+function resizeImage(file, maxDim, cb){
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = ()=>{
+      let w = img.width, h = img.height;
+      if(w > maxDim || h > maxDim){
+        const s = maxDim / Math.max(w, h);
+        w = Math.round(w*s); h = Math.round(h*s);
+      }
+      const canvas = document.createElement("canvas");
+      canvas.width = w; canvas.height = h;
+      canvas.getContext("2d").drawImage(img, 0, 0, w, h);
+      try { cb(canvas.toDataURL("image/jpeg", 0.82)); } catch(err){ cb(""); }
+    };
+    img.onerror = ()=> cb("");
+    img.src = e.target.result;
+  };
+  reader.onerror = ()=> cb("");
+  reader.readAsDataURL(file);
+}
+function renderCallis(){
+  const box = $("#calliList");
+  if(!callis.length){
+    box.innerHTML = `<div class="empty"><span class="e-ico">🖌️</span>暂无练习记录，开启你的笔墨时光吧</div>`;
+    return;
+  }
+  box.innerHTML = callis.map(c=>`
+    <div class="calli-card">
+      ${c.img
+        ? `<div class="calli-thumb"><img src="${esc(c.img)}" data-img="${esc(c.img)}" alt="练习图片"></div>`
+        : `<div class="calli-thumb empty-thumb">🖌️</div>`}
+      <div class="calli-info">
+        <div class="calli-font">🖌️ ${esc(c.font)} <span class="tag">⏱ ${esc(c.dur)} 分钟</span></div>
+        ${c.copy ? `<div class="calli-copy">📜 ${esc(c.copy)}</div>` : ""}
+        <div class="calli-foot">
+          <span class="note-time">🕐 ${fmtTime(c.ts)}</span>
+          <button class="icon-btn del" data-del="${c.id}">🗑️</button>
+        </div>
+      </div>
+    </div>`).join("");
+  box.querySelectorAll("[data-img]").forEach(img=> img.addEventListener("click", ()=>{
+    $("#imgModalImg").src = img.dataset.img;
+    openModal("#imgModal");
+  }));
+  box.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
+    askConfirm("删除这条练习记录？", ()=>{
+      callis = callis.filter(x=>x.id!==el.dataset.del);
+      saveCallis(); renderCallis(); toast("已删除");
+    });
+  }));
+}
+$("#calliAddBtn").addEventListener("click", ()=> openModal("#calliModal"));
+$("#calliSaveBtn").addEventListener("click", ()=>{
+  const font = $("#calliFont").value;
+  const dur = $("#calliDur").value.trim();
+  const copy = $("#calliCopy").value.trim();
+  if(!dur || Number(dur) <= 0){ toast("请输入练习时长"); return; }
+  const file = $("#calliImg").files && $("#calliImg").files[0];
+  const done = imgData=>{
+    callis.unshift({id:uid(), font, dur, copy, img:imgData, ts:Date.now()});
+    saveCallis();
+    $("#calliFont").value = "楷书"; $("#calliDur").value = ""; $("#calliCopy").value = ""; $("#calliImg").value = "";
+    closeModal("#calliModal");
+    renderCallis(); toast("练习记录已保存 ✓");
+  };
+  if(file){ resizeImage(file, 1200, done); }
+  else { done(""); }
+});
+
+/* ================= 数据导入 / 导出 ================= */
+function exportData(){
+  const data = {};
+  for(let i=0;i<localStorage.length;i++){
+    const k = localStorage.key(i);
+    if(k && k.indexOf("ws_")===0){
+      try { data[k] = JSON.parse(localStorage.getItem(k)); }
+      catch(e){ data[k] = localStorage.getItem(k); }
+    }
+  }
+  const payload = { app:"my-workbench", version:1, exportedAt: Date.now(), data };
+  const json = JSON.stringify(payload, null, 2);
+  const d = new Date();
+  const filename = "工作台数据备份_" + d.getFullYear()+pad(d.getMonth()+1)+pad(d.getDate()) + ".json";
+  const blob = new Blob([json], {type:"application/json"});
+  const file = new File([blob], filename, {type:"application/json"});
+  /* iOS / Android 不支持 <a download> 下载，会跳转到 blob 导致白屏；
+     改用系统分享面板（不跳转页面），可“存储到文件”或转发微信 */
+  if(navigator.canShare && navigator.canShare({files:[file]})){
+    navigator.share({ files:[file], title:"工作台数据备份" }).catch(()=>{});
+    return;
+  }
+  /* 回退：浏览器直接下载（桌面 / 安卓 Chrome 可用，不会跳转） */
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=> URL.revokeObjectURL(url), 1500);
+  toast("数据已导出 ✓");
+}
+/* 重新从 localStorage 读取并渲染全部数据 */
+function reloadAllData(){
+  tasks = store.get("tasks", {});
+  diaries = store.get("diaries", []);
+  sports = store.get("sports", []);
+  weights = store.get("weights", []);
+  reads = store.get("reads", []);
+  callis = store.get("callis", []);
+  videoCache = store.get("videoCache", {});
+  renderCalendar(); renderTasks(); renderStats(); updateRedDot();
+  renderDiaries(); renderSports(); renderReads(); renderWeightChart();
+  renderCallis();
+}
+function importData(file){
+  const reader = new FileReader();
+  reader.onload = e=>{
+    try{
+      const payload = JSON.parse(e.target.result);
+      const src = (payload && typeof payload === "object" && payload.data) ? payload.data : payload;
+      let n = 0;
+      for(const k in src){
+        if(k.indexOf("ws_")===0){ localStorage.setItem(k, JSON.stringify(src[k])); n++; }
+      }
+      reloadAllData();
+      toast("已导入 " + n + " 项数据 ✓");
+    }catch(err){ toast("备份文件解析失败，请检查后重试"); }
+  };
+  reader.onerror = ()=> toast("读取文件失败");
+  reader.readAsText(file);
+}
+$("#exportBtn").addEventListener("click", exportData);
+$("#importBtn").addEventListener("click", ()=> $("#importFile").click());
+$("#importFile").addEventListener("change", function(){
+  if(this.files && this.files[0]) importData(this.files[0]);
+  this.value = "";
+});
+
 /* ================= 励志语录 ================= */
 const QUOTES = [
   "种一棵树最好的时间是十年前，其次是现在。",
@@ -1468,6 +1686,7 @@ function init(){
   renderCalendar(); renderTasks(); renderStats(); updateRedDot();
   renderVideos();
   renderDiaries(); renderSports(); renderReads(); renderWeightChart();
+  renderCallis();
   requestNotify();
   checkMorningRemind();
 
