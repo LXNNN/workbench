@@ -334,13 +334,6 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 }
 .v-reason-title{font-size:13px;font-weight:700;color:var(--accent);margin-bottom:5px;display:flex;align-items:center;gap:5px}
 .v-reason-text{font-size:13px;line-height:1.7;color:var(--text-main)}
-/* ✏️ 创作思路 */
-.v-idea{
-  margin-top:10px;padding:12px 14px;border-radius:var(--radius-sm);
-  background:var(--green-bg);border-left:3px solid var(--green-mid);
-}
-.v-idea-title{font-size:13px;font-weight:700;color:var(--green-mid);margin-bottom:5px;display:flex;align-items:center;gap:5px}
-.v-idea-text{font-size:13px;line-height:1.7;color:var(--text-main)}
 /* 查看原文按钮 */
 .v-action{
   margin-top:14px;text-align:center;
@@ -531,19 +524,7 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 
       <!-- 运动记录 -->
       <div class="sport-pane" id="sportPaneRecord">
-        <div class="card">
-          <div class="card-title"><span class="bar"></span>新增运动记录</div>
-          <div class="field">
-            <label>运动分类</label>
-            <div class="tabs" style="margin-bottom:0" id="sportCatTabs">
-              <div class="tab active" data-cat="有氧运动">🫁 有氧运动</div>
-              <div class="tab" data-cat="无氧运动">💪 无氧运动</div>
-            </div>
-          </div>
-          <div class="field"><label>运动类型</label><input type="text" id="sportType" placeholder="如：跑步机、椭圆机、卧推、深蹲…"></div>
-          <div class="field"><label>运动时长（分钟）</label><input type="number" id="sportDur" min="1" placeholder="如：30"></div>
-          <button class="btn btn-primary btn-block" id="sportSaveBtn">保存记录</button>
-        </div>
+        <button class="btn btn-primary add-note-btn" id="sportAddBtn">＋ 新增运动</button>
         <div class="tabs" id="sportFilterTabs">
           <div class="tab active" data-f="all">全部</div>
           <div class="tab" data-f="有氧运动">有氧运动</div>
@@ -602,6 +583,26 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
   </div>
 </div>
 
+<!-- 运动记录弹窗 -->
+<div class="modal-mask" id="sportModal">
+  <div class="modal">
+    <h3>＋ 新增运动记录</h3>
+    <div class="field">
+      <label>运动分类</label>
+      <div class="tabs" style="margin-bottom:0" id="sportCatTabs">
+        <div class="tab active" data-cat="有氧运动">🫁 有氧运动</div>
+        <div class="tab" data-cat="无氧运动">💪 无氧运动</div>
+      </div>
+    </div>
+    <div class="field"><label>运动类型</label><input type="text" id="sportType" placeholder="如：跑步机、椭圆机、卧推、深蹲…"></div>
+    <div class="field"><label>运动时长（分钟）</label><input type="number" id="sportDur" min="1" placeholder="如：30"></div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn btn-ghost grow" data-close>取消</button>
+      <button class="btn btn-primary grow" id="sportSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
 <!-- 确认弹窗 -->
 <div class="modal-mask" id="confirmModal">
   <div class="modal">
@@ -656,8 +657,17 @@ $$(".modal-mask").forEach(m => {
   m.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", ()=> m.classList.remove("show")));
 });
 let confirmCb = null;
-function askConfirm(text, cb){
-  $("#confirmText").textContent = text; confirmCb = cb; openModal("#confirmModal");
+function askConfirm(text, cb, btnOpt){
+  $("#confirmText").textContent = text; confirmCb = cb;
+  const okBtn = $("#confirmOk");
+  if(btnOpt){
+    okBtn.textContent = btnOpt.label || "确认";
+    okBtn.style.background = btnOpt.color || "";
+  } else {
+    okBtn.textContent = "确认删除";
+    okBtn.style.background = "linear-gradient(135deg,#e05a48,#c94a3a)";
+  }
+  openModal("#confirmModal");
 }
 $("#confirmOk").addEventListener("click", ()=>{ closeModal("#confirmModal"); if(confirmCb) confirmCb(); });
 
@@ -765,7 +775,7 @@ function renderTasks(){
       t.done = true; t.doneAt = Date.now(); saveTasks();
       renderTasks(); renderCalendar(); renderStats(); updateRedDot();
       toast("已打卡 ✓ 继续保持！");
-    });
+    }, {label:"确认完成", color:"linear-gradient(135deg,#5cbd8c,#2ba35f)"});
   }));
   box.querySelectorAll("[data-edit]").forEach(el=> el.addEventListener("click", ()=>{
     const t = tasksOf(k).find(t=>t.id===el.dataset.edit);
@@ -1038,9 +1048,9 @@ function renderVideoList(list, source, fetchedAt){
   $("#videoUpdateTip").textContent = tip;
   $("#videoList").innerHTML = list.map((v,i)=>{
     const ds = genDetailStats(v.heat, i+1);
-    let analysis = {reason:"", idea:""};
+    let analysis = {reason:""};
     try { analysis = analyzeVideo(v.copy, v.track); } catch(e){}
-    if(!analysis || typeof analysis !== "object") analysis = {reason:"", idea:""};
+    if(!analysis || typeof analysis !== "object") analysis = {reason:""};
     const webUrl = (v.url && /^https?:\/\//.test(v.url)) ? v.url : toWebUrl(v.copy, curPlat);
     return `
     <div class="video-card ${webUrl?"clickable":""}" style="animation-delay:${i*0.05}s" ${webUrl?`data-url="${esc(webUrl)}"`:""}>
@@ -1059,10 +1069,6 @@ function renderVideoList(list, source, fetchedAt){
       <div class="v-reason">
         <div class="v-reason-title">🔥 爆款分析</div>
         <div class="v-reason-text">${analysis.reason}</div>
-      </div>
-      <div class="v-idea">
-        <div class="v-idea-title">✏️ 你的二创思路</div>
-        <div class="v-idea-text">${analysis.idea}</div>
       </div>
       ${webUrl ? `<div class="v-action"><button class="v-action-btn" data-href="${esc(webUrl)}">▶ 查看原视频</button></div>` : ""}
     </div>`}).join("");
@@ -1221,6 +1227,7 @@ $("#sportSaveBtn").addEventListener("click", ()=>{
   sports.unshift({id:uid(), cat:sportCat, type, dur, date:todayKey(), ts:Date.now()});
   saveSports();
   $("#sportType").value = ""; $("#sportDur").value = "";
+  closeModal("#sportModal");
   renderSports(); toast("运动记录已保存 ✓");
 });
 
@@ -1334,6 +1341,7 @@ function renderReads(){
   }));
 }
 $("#readAddBtn").addEventListener("click", ()=> openModal("#readModal"));
+$("#sportAddBtn").addEventListener("click", ()=> openModal("#sportModal"));
 $("#readSaveBtn").addEventListener("click", ()=>{
   const book = $("#readBook").value.trim();
   const quote = $("#readQuote").value.trim();
@@ -1419,21 +1427,6 @@ const REASON_TEMPLATES = {
     (t)=>`「${t}」兼具实用价值与情绪价值，完播率与分享率双高，平台判定为优质内容持续倾斜流量。`
   ]
 };
-const IDEA_TEMPLATES = {
-  "美食": (t)=>`对标「${t}」，你可以做：① 同赛道不同角度（如"挑战10元吃撑""外卖VS自制"）；② 本地化改编加入地域特色；③ 拍摄手法升级（第一视角/ASMR收音）增强沉浸感。`,
-  "影视娱乐": (t)=>`对标「${t}」，你可以做：① 影视解说换角度（从配角视角/导演彩蛋切入）；② 剧情预测/结局改写引发讨论；③ 跨作品对比（"如果XX在YY里"脑洞向）。`,
-  "音乐": (t)=>`对标「${t}」，你可以做：① 同曲不同风格翻唱（古风/爵士/RAP）；② 歌词故事化演绎（一人分饰多角）；③ 乐器跨界改编（二胡版流行歌反差感）。`,
-  "游戏": (t)=>`对标「${t}」，你可以做：① 新手友好版攻略（去掉术语说人话）；② 失败集锦/翻车现场更有亲和力；③ "氪0党vs氪金党"对比引发站队讨论。`,
-  "体育健身": (t)=>`对标「${t}」，你可以做：① "办公室/宿舍也能练"低门槛版本；② 健身餐vlog（好吃不胖才是真本事）；③ 记录真实变化过程（不用滤镜的诚实感最打动人）。`,
-  "科技数码": (t)=>`对标「${t}」，你可以做：① "用了X天后"长期体验（非开箱即评）；② 隐藏功能挖掘（"99%的人不知道"标题党但干货）；③ 横评对比（A vs B vs C帮你选）。`,
-  "情感生活": (t)=>`对标「${t}」，你可以做：① 反转叙事（开头误导结尾反转）；② 数据支撑观点（"调研了100对情侣发现"）；③ 开放式提问结尾引导评论（"你们觉得呢？"）。`,
-  "旅行户外": (t)=>`对标「${t}」，你可以做：① "穷游挑战"预算限制增加戏剧性；② 避雷指南比种草更具实用价值；③ 季节限定玩法（"只有这X天能看到"制造稀缺）。`,
-  "时尚美妆": (t)=>`对标「${t}」，你可以做：① 不同肤质实测（油皮/干皮/敏感肌分开说）；② "学生党平替"系列精准打中价格敏感人群；③ 前后对比要有控制变量意识才可信。`,
-  "学习职场": (t)=>`对标「${t}」，你可以做：① "我的桌面/书包"展示法比纯口述更有说服力；② 失败复盘比成功经验更有价值（"踩过的坑"）；③ 一天vlog记录真实学习状态（不剪辑的粗糙感反而真实）。`,
-  "萌宠": (t)=>`对标「${t}」，你可以做：① 宠物内心OS配音（赋予人格化台词）；② "第一次养猫/狗"成长记录（陪伴感极强）；③ 宠物反应测试（"听到XX会怎样"可复制性强）。`,
-  "时政社会": (t)=>`对标「${t}」，你可以做：① 用"普通人视角"解读政策影响（更接地气）；② 数据可视化（图表/对比）降低理解门槛；③ 提供可操作的应对建议（"和我有什么关系"）。`,
-  "热点综合": (t)=>`对标「${t}」，你可以做：① 找到独特切入点（别人说现象你说本质）；② 加入个人经历/数据让内容有辨识度；③ 结尾留钩子（"下期讲XX"提升关注）。`
-};
 function analyzeVideo(title, track){
   // 归一化：兼容"单函数"与"函数数组"两种写法，缺失轨道统一回退到"热点综合"
   const norm = v => {
@@ -1441,14 +1434,10 @@ function analyzeVideo(title, track){
     return Array.isArray(v) ? v : [v];
   };
   const reasons = norm(REASON_TEMPLATES[track] || REASON_TEMPLATES["热点综合"]);
-  const ideas   = norm(IDEA_TEMPLATES[track] || IDEA_TEMPLATES["热点综合"]);
   const ri = (title.length + track.length) % (reasons.length || 1);
-  const ii = (title.charCodeAt(0) + title.length) % (ideas.length || 1);
   const rf = reasons[ri] || (()=>"");
-  const it = ideas[ii] || (()=>"");
   return {
-    reason: typeof rf === "function" ? rf(title) : String(rf || ""),
-    idea:   typeof it === "function" ? it(title)   : String(it || "")
+    reason: typeof rf === "function" ? rf(title) : String(rf || "")
   };
 }
 /* 模拟详细数据（接口只给热度值，按比例拆分为播放/点赞/评论） */
