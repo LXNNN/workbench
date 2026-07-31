@@ -311,10 +311,10 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .icon-btn.del:hover{background:rgba(224,90,72,.10);color:var(--danger)}
 /* ============ 爆款视频（参考图3风格） ============ */
 .video-card{
-  background:#fff;border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-md);padding:18px;margin-bottom:14px;
-  animation:fadeUp .35s ease both;position:relative;
-  border:1px solid rgba(34,122,63,.06);
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbf6 100%);border-radius:var(--radius-lg);
+  box-shadow:0 6px 18px rgba(34,122,63,.08);padding:18px;margin-bottom:14px;
+  animation:fadeUp .35s ease both;position:relative;overflow:hidden;
+  border:1px solid rgba(34,122,63,.10);
 }
 .video-card.clickable{cursor:pointer;transition:transform .2s,box-shadow .2s}
 .video-card.clickable:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
@@ -359,14 +359,17 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .update-tip{font-size:12px;color:var(--text-sub);text-align:center;margin:4px 0 12px}
 /* ============ 灵感 / 运动 / 阅读卡片 ============ */
 .note-card{
-  background:#fff;border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-sm);padding:18px;margin-bottom:12px;
-  animation:fadeUp .35s ease both;border:1px solid rgba(34,122,63,.05);
+  position:relative;overflow:hidden;
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbf6 100%);
+  border:1px solid rgba(34,122,63,.10);border-radius:var(--radius-lg);
+  padding:18px;margin-bottom:14px;
+  box-shadow:0 6px 18px rgba(34,122,63,.08);
+  animation:fadeUp .35s ease both;
 }
 .note-text{font-size:14.5px;line-height:1.75;white-space:pre-wrap;word-break:break-all;color:var(--text-main)}
 .note-foot{display:flex;align-items:center;margin-top:12px;padding-top:11px;border-top:1px dashed rgba(34,122,63,.08)}
 .note-time{font-size:12px;color:var(--text-light)}
-.note-foot .icon-btn{margin-left:auto}
+.note-foot .icon-btn.edit{margin-left:auto}
 /* 灵感日记卡片（美化版） */
 .diary-card{
   position:relative;overflow:hidden;
@@ -389,13 +392,18 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .diary-text{font-size:14.5px;line-height:1.8;white-space:pre-wrap;word-break:break-all;color:var(--text-main)}
 .diary-foot{display:flex;align-items:center;margin-top:13px;padding-top:11px;border-top:1px dashed rgba(34,122,63,.14)}
 .diary-time{font-size:12px;color:var(--text-light)}
-.diary-foot .icon-btn{margin-left:auto}
+.diary-foot .icon-btn.edit{margin-left:auto}
+.diary-foot .diary-badge{margin-bottom:0}
+.foot-badge{font-size:10.5px;padding:3px 9px;margin-left:10px}
+.icon-btn.edit:hover{background:var(--green-bg);color:var(--green-deep)}
 .book-name{font-size:15.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text-main)}
 /* 软笔书法学习卡片 */
 .calli-card{
-  display:flex;gap:11px;background:#fff;border-radius:var(--radius-lg);
-  box-shadow:var(--shadow-md);padding:9px;margin-bottom:11px;
-  border:1px solid rgba(34,122,63,.06);animation:fadeUp .3s ease both;
+  position:relative;overflow:hidden;display:flex;gap:11px;
+  background:linear-gradient(180deg,#ffffff 0%,#f4fbf6 100%);
+  border:1px solid rgba(34,122,63,.10);border-radius:var(--radius-lg);
+  padding:11px;margin-bottom:14px;
+  box-shadow:0 6px 18px rgba(34,122,63,.08);animation:fadeUp .3s ease both;
 }
 .calli-thumb{
   width:80px;height:80px;flex-shrink:0;border-radius:10px;overflow:hidden;
@@ -408,24 +416,25 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .calli-font .tag{font-size:11px;padding:3px 9px}
 .calli-copy{font-size:13px;line-height:1.6;color:var(--text-main);margin-bottom:7px;word-break:break-all}
 .calli-foot{display:flex;align-items:center;margin-top:auto;padding-top:7px;border-top:1px dashed rgba(34,122,63,.08)}
-.calli-foot .icon-btn{margin-left:auto}
+.calli-foot .icon-btn.edit{margin-left:auto}
 .calli-foot .icon-btn{padding:5px 7px;font-size:14px}
 .quote-block{
   background:var(--green-bg);border-left:3px solid var(--green-mid);
   border-radius:8px;padding:11px 13px;font-size:13.5px;line-height:1.7;color:var(--text-main);
   margin-bottom:10px;white-space:pre-wrap;word-break:break-all;font-style:italic;
 }
-.sport-line{display:flex;align-items:center;gap:12px}
+.sport-line{display:flex;align-items:center;gap:10px}
 .sport-ico{
-  width:44px;height:44px;border-radius:14px;font-size:21px;flex-shrink:0;
+  width:40px;height:40px;border-radius:13px;font-size:19px;flex-shrink:0;
   display:flex;align-items:center;justify-content:center;
   background:linear-gradient(135deg,var(--green-pale),var(--green-bg));
 }
 .sport-info{flex:1;min-width:0}
 .sport-type{font-size:14.5px;font-weight:700;color:var(--text-main)}
+.sport-tag{font-size:10.5px;padding:2px 9px;margin-left:6px;vertical-align:middle}
 .sport-meta{font-size:12px;color:var(--text-light);margin-top:3px;display:flex;gap:10px;flex-wrap:wrap}
-.sport-dur{font-size:16px;font-weight:800;color:var(--green-mid);white-space:nowrap}
-.sport-dur small{font-size:11px;font-weight:600;color:var(--text-light)}
+.sport-card{padding:12px 14px;margin-bottom:12px}
+.sport-card::before{display:none}
 .load-more{margin:6px auto 0;display:block;min-width:180px}
 /* 体重变化 */
 #weightChart{margin-top:4px}
@@ -540,9 +549,10 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <section class="page" id="page-diary">
       <div class="page-head"><h2>💡 灵感日记</h2><p>随手记录闪现的灵感与想法，永久保存在本地</p></div>
       <div class="card">
-        <div class="card-title"><span class="bar"></span>写点什么</div>
+        <div class="card-title"><span class="bar"></span><span id="diaryCardTitle">写点什么</span></div>
         <textarea id="diaryInput" placeholder="记录此刻的灵感、随笔、想法……"></textarea>
         <button class="btn btn-primary btn-block" id="diarySaveBtn" style="margin-top:12px">保存灵感</button>
+        <button class="btn btn-ghost btn-block" id="diaryCancelBtn" style="margin-top:10px;display:none">取消修改</button>
       </div>
       <div id="diaryList"></div>
       <button class="btn btn-ghost load-more" id="diaryMoreBtn" style="display:none">查看更多</button>
@@ -1216,6 +1226,7 @@ function checkVideoRefresh(){
 
 /* ================= 灵感日记 ================= */
 let diaries = store.get("diaries", []);
+let editingDiaryId = null;
 let diaryShow = 10;
 function saveDiaries(){ store.set("diaries", diaries); }
 function renderDiaries(){
@@ -1228,13 +1239,24 @@ function renderDiaries(){
   const shown = diaries.slice(0, diaryShow);
   box.innerHTML = shown.map(d=>`
     <div class="diary-card">
-      <span class="diary-badge">💡 灵感</span>
       <div class="diary-text">${esc(d.text)}</div>
       <div class="diary-foot">
         <span class="diary-time">🕐 ${fmtTime(d.ts)}</span>
+        <span class="diary-badge foot-badge">💡 灵感</span>
+        <button class="icon-btn edit" data-edit="${d.id}">✏️</button>
         <button class="icon-btn del" data-del="${d.id}">🗑️</button>
       </div>
     </div>`).join("");
+  box.querySelectorAll("[data-edit]").forEach(el=> el.addEventListener("click", ()=>{
+    const d = diaries.find(x=>x.id===el.dataset.edit);
+    if(!d) return;
+    editingDiaryId = d.id;
+    $("#diaryInput").value = d.text;
+    $("#diaryCardTitle").textContent = "修改灵感";
+    $("#diarySaveBtn").textContent = "更新灵感";
+    $("#diaryCancelBtn").style.display = "block";
+    window.scrollTo({top:0});
+  }));
   box.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
     askConfirm("删除这条灵感日记？", ()=>{
       diaries = diaries.filter(x=>x.id!==el.dataset.del);
@@ -1243,15 +1265,29 @@ function renderDiaries(){
   }));
   $("#diaryMoreBtn").style.display = diaries.length > diaryShow ? "block" : "none";
 }
+function resetDiaryEdit(){
+  editingDiaryId = null;
+  $("#diaryInput").value = "";
+  $("#diaryCardTitle").textContent = "写点什么";
+  $("#diarySaveBtn").textContent = "保存灵感";
+  $("#diaryCancelBtn").style.display = "none";
+}
 $("#diarySaveBtn").addEventListener("click", ()=>{
   const text = $("#diaryInput").value.trim();
   if(!text){ toast("先写点什么再保存吧"); return; }
-  diaries.unshift({id:uid(), text, ts:Date.now()});
+  const wasEdit = !!editingDiaryId;
+  if(editingDiaryId){
+    const d = diaries.find(x=>x.id===editingDiaryId);
+    if(d){ d.text = text; d.ts = Date.now(); }
+  } else {
+    diaries.unshift({id:uid(), text, ts:Date.now()});
+  }
   saveDiaries();
-  $("#diaryInput").value = "";
+  resetDiaryEdit();
   diaryShow = Math.max(diaryShow, 10);
-  renderDiaries(); toast("灵感已保存 ✓");
+  renderDiaries(); toast(wasEdit ? "已更新 ✓" : "灵感已保存 ✓");
 });
+$("#diaryCancelBtn").addEventListener("click", resetDiaryEdit);
 $("#diaryMoreBtn").addEventListener("click", ()=>{
   diaryShow += 10; renderDiaries();
 });
@@ -1277,14 +1313,13 @@ function renderSports(){
     return;
   }
   box.innerHTML = list.map(s=>`
-    <div class="note-card">
+    <div class="diary-card sport-card">
       <div class="sport-line">
         <div class="sport-ico">${s.cat==="有氧运动"?"🫁":"💪"}</div>
         <div class="sport-info">
-          <div class="sport-type">${esc(s.type)}</div>
-          <div class="sport-meta"><span>📅 ${s.date}</span><span class="tag" style="font-size:10.5px">${s.cat}</span></div>
+          <div class="sport-type">${esc(s.type)} <span class="tag sport-tag">${s.cat}</span></div>
+          <div class="sport-meta">📅 ${s.date} · ⏱ ${s.dur} 分钟</div>
         </div>
-        <div class="sport-dur">${s.dur}<small> 分钟</small></div>
         <button class="icon-btn del" data-del="${s.id}">🗑️</button>
       </div>
     </div>`).join("");
@@ -1392,6 +1427,7 @@ function openWeightDetail(){
 
 /* ================= 每日阅读 ================= */
 let reads = store.get("reads", []);
+let editingReadId = null;
 function saveReads(){ store.set("reads", reads); }
 function renderReads(){
   const box = $("#readList");
@@ -1406,9 +1442,20 @@ function renderReads(){
       ${r.thought? `<div class="note-text" style="font-size:13.5px;color:var(--text-main)">💭 ${esc(r.thought)}</div>` : ""}
       <div class="note-foot">
         <span class="note-time">🕐 ${fmtTime(r.ts)}</span>
+        <button class="icon-btn edit" data-edit="${r.id}">✏️</button>
         <button class="icon-btn del" data-del="${r.id}">🗑️</button>
       </div>
     </div>`).join("");
+  box.querySelectorAll("[data-edit]").forEach(el=> el.addEventListener("click", ()=>{
+    const r = reads.find(x=>x.id===el.dataset.edit);
+    if(!r) return;
+    editingReadId = r.id;
+    $("#readBook").value = r.book || "";
+    $("#readQuote").value = r.quote || "";
+    $("#readThought").value = r.thought || "";
+    $("#readModal").querySelector(".modal h3").textContent = "✏️ 修改阅读笔记";
+    openModal("#readModal");
+  }));
   box.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
     askConfirm("删除这条阅读笔记？", ()=>{
       reads = reads.filter(x=>x.id!==el.dataset.del);
@@ -1416,22 +1463,35 @@ function renderReads(){
     });
   }));
 }
-$("#readAddBtn").addEventListener("click", ()=> openModal("#readModal"));
+function resetReadEdit(){
+  editingReadId = null;
+  $("#readBook").value = ""; $("#readQuote").value = ""; $("#readThought").value = "";
+  $("#readModal").querySelector(".modal h3").textContent = "✏️ 新增阅读笔记";
+}
+$("#readAddBtn").addEventListener("click", ()=>{ resetReadEdit(); openModal("#readModal"); });
 $("#sportAddBtn").addEventListener("click", ()=> openModal("#sportModal"));
+$("#readModal").querySelector("[data-close]").addEventListener("click", resetReadEdit);
 $("#readSaveBtn").addEventListener("click", ()=>{
   const book = $("#readBook").value.trim();
   const quote = $("#readQuote").value.trim();
   const thought = $("#readThought").value.trim();
   if(!book){ toast("请输入书籍名称"); return; }
-  reads.unshift({id:uid(), book, quote, thought, ts:Date.now()});
+  const wasEdit = !!editingReadId;
+  if(editingReadId){
+    const r = reads.find(x=>x.id===editingReadId);
+    if(r){ r.book = book; r.quote = quote; r.thought = thought; r.ts = Date.now(); }
+  } else {
+    reads.unshift({id:uid(), book, quote, thought, ts:Date.now()});
+  }
   saveReads();
-  $("#readBook").value = ""; $("#readQuote").value = ""; $("#readThought").value = "";
+  resetReadEdit();
   closeModal("#readModal");
-  renderReads(); toast("阅读笔记已保存 ✓");
+  renderReads(); toast(wasEdit ? "已更新 ✓" : "阅读笔记已保存 ✓");
 });
 
 /* ================= 软笔书法学习 ================= */
 let callis = store.get("callis", []);
+let editingCalliId = null;
 function saveCallis(){ store.set("callis", callis); }
 /* 将上传图片压缩为 dataURL，避免撑爆 localStorage 配额 */
 function resizeImage(file, maxDim, cb){
@@ -1471,6 +1531,7 @@ function renderCallis(){
         ${c.copy ? `<div class="calli-copy">📜 ${esc(c.copy)}</div>` : ""}
         <div class="calli-foot">
           <span class="note-time">🕐 ${fmtTime(c.ts)}</span>
+          <button class="icon-btn edit" data-edit="${c.id}">✏️</button>
           <button class="icon-btn del" data-del="${c.id}">🗑️</button>
         </div>
       </div>
@@ -1485,23 +1546,47 @@ function renderCallis(){
       saveCallis(); renderCallis(); toast("已删除");
     });
   }));
+  box.querySelectorAll("[data-edit]").forEach(el=> el.addEventListener("click", ()=>{
+    const c = callis.find(x=>x.id===el.dataset.edit);
+    if(!c) return;
+    editingCalliId = c.id;
+    $("#calliFont").value = c.font || "楷书";
+    $("#calliDur").value = c.dur || "";
+    $("#calliCopy").value = c.copy || "";
+    $("#calliImg").value = "";
+    $("#calliModal").querySelector(".modal h3").textContent = "🖌️ 修改书法练习";
+    openModal("#calliModal");
+  }));
 }
-$("#calliAddBtn").addEventListener("click", ()=> openModal("#calliModal"));
+function resetCalliEdit(){
+  editingCalliId = null;
+  $("#calliFont").value = "楷书"; $("#calliDur").value = ""; $("#calliCopy").value = ""; $("#calliImg").value = "";
+  $("#calliModal").querySelector(".modal h3").textContent = "🖌️ 新增书法练习";
+}
+$("#calliAddBtn").addEventListener("click", ()=>{ resetCalliEdit(); openModal("#calliModal"); });
+$("#calliModal").querySelector("[data-close]").addEventListener("click", resetCalliEdit);
 $("#calliSaveBtn").addEventListener("click", ()=>{
   const font = $("#calliFont").value;
   const dur = $("#calliDur").value.trim();
   const copy = $("#calliCopy").value.trim();
   if(!dur || Number(dur) <= 0){ toast("请输入练习时长"); return; }
   const file = $("#calliImg").files && $("#calliImg").files[0];
+  const oldImg = editingCalliId ? ((callis.find(x=>x.id===editingCalliId)||{}).img || "") : "";
   const done = imgData=>{
-    callis.unshift({id:uid(), font, dur, copy, img:imgData, ts:Date.now()});
+    const wasEdit = !!editingCalliId;
+    if(editingCalliId){
+      const c = callis.find(x=>x.id===editingCalliId);
+      if(c){ c.font = font; c.dur = dur; c.copy = copy; if(imgData) c.img = imgData; c.ts = Date.now(); }
+    } else {
+      callis.unshift({id:uid(), font, dur, copy, img:imgData, ts:Date.now()});
+    }
     saveCallis();
-    $("#calliFont").value = "楷书"; $("#calliDur").value = ""; $("#calliCopy").value = ""; $("#calliImg").value = "";
+    resetCalliEdit();
     closeModal("#calliModal");
-    renderCallis(); toast("练习记录已保存 ✓");
+    renderCallis(); toast(wasEdit ? "已更新 ✓" : "练习记录已保存 ✓");
   };
   if(file){ resizeImage(file, 1200, done); }
-  else { done(""); }
+  else { done(oldImg); }
 });
 
 /* ================= 数据导入 / 导出 ================= */
