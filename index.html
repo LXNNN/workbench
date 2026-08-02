@@ -73,7 +73,7 @@ body::before{
 .brand p{font-size:11px;color:rgba(255,255,255,.55);margin-top:2px}
 /* 导航药丸 */
 .nav-item{
-  display:flex;align-items:center;gap:11px;padding:13px 16px;border-radius:var(--radius-md);
+  display:flex;align-items:center;gap:9px;padding:9px 14px;border-radius:var(--radius-md);
   cursor:pointer;font-size:14.5px;color:rgba(255,255,255,.82);position:relative;
   transition:all .25s ease;user-select:none;
   background:rgba(255,255,255,.10);
@@ -283,6 +283,7 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 }
 .cal-day .d-dot.done{background:var(--green-mid)}
 .cal-day .d-dot.undone{background:#e0863f}
+.cal-day .d-dot.cycle{background:#e85d9c}
 .cal-day.selected .d-dot{background:#fff}
 /* 任务列表 */
 .task-item{
@@ -381,8 +382,8 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 }
 .diary-card::before{
   content:"";position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(180deg,var(--green-mid),var(--green-deep));
-  border-radius:4px 0 0 4px;
+  background:linear-gradient(180deg,var(--green-pale),var(--green-mid));
+  border-radius:var(--radius-lg) 0 0 var(--radius-lg);
 }
 .diary-badge{
   display:inline-flex;align-items:center;gap:5px;
@@ -396,7 +397,21 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 .diary-foot .diary-badge{margin-bottom:0}
 .foot-badge{font-size:10.5px;padding:3px 9px}
 .icon-btn.edit:hover{background:var(--green-bg);color:var(--green-deep)}
+/* 经期记录卡片 */
+.cycle-row{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:9px}
+.cycle-actions{display:flex;align-items:center;gap:6px}
+.cycle-date{font-size:15px;font-weight:700;color:var(--text-sub)}
+.cycle-gap-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+/* 经期弹窗：标题+日期一行 */
+#cycleModal .field{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+#cycleModal .field label{display:inline;font-size:13px;font-weight:600;color:var(--text-sub);margin-bottom:0;white-space:nowrap;flex-shrink:0}
+#cycleModal .field input[type=date]{flex:1;min-width:0}
+.cycle-gap-text{font-size:13px;color:var(--text-light);line-height:1.6}
+.cycle-gap-text b{color:var(--green-mid);font-weight:700}
+.cycle-gap-row.warn .cycle-gap-text{color:#e23b3b}
+.cycle-gap-row.warn .cycle-gap-text b{color:#e23b3b}
 .book-name{font-size:15.5px;font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px;color:var(--text-main)}
+.book-name .bn-ico{position:relative;top:-1.5px}
 /* 软笔书法学习卡片 */
 .calli-card{
   position:relative;overflow:hidden;display:flex;gap:11px;
@@ -475,6 +490,7 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <div class="nav-item" data-page="sport"><span class="ico">🏃</span>运动健身</div>
     <div class="nav-item" data-page="read"><span class="ico">📖</span>每日阅读</div>
     <div class="nav-item" data-page="calli"><span class="ico">🖌️</span>软笔书法学习</div>
+    <div class="nav-item" data-page="cycle"><span class="ico">🩸</span>经期记录</div>
     <div class="side-ops">
       <button class="side-btn" id="exportBtn">⬇️ 导出数据</button>
       <button class="side-btn" id="importBtn">⬆️ 导入数据</button>
@@ -605,6 +621,12 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
       <button class="btn btn-primary add-note-btn" id="calliAddBtn">＋ 新增练习</button>
       <div id="calliList"></div>
     </section>
+
+    <section class="page" id="page-cycle">
+      <div class="page-head"><h2>🩸 经期记录</h2><p>记录每一次周期，温柔地了解自己的身体</p></div>
+      <button class="btn btn-primary add-note-btn" id="cycleAddBtn">＋ 新增记录</button>
+      <div id="cycleList"></div>
+    </section>
   </main>
 </div>
 
@@ -675,6 +697,19 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <div class="row" style="margin-top:18px">
       <button class="btn btn-ghost grow" data-close>取消</button>
       <button class="btn btn-primary grow" id="calliSaveBtn">保存</button>
+    </div>
+  </div>
+</div>
+
+<!-- 经期记录弹窗 -->
+<div class="modal-mask" id="cycleModal">
+  <div class="modal">
+    <h3 id="cycleModalTitle">🩸 新增经期记录</h3>
+    <div class="field"><label>开始日期</label><input type="date" id="cycleDate"></div>
+    <div class="field"><label>结束日期</label><input type="date" id="cycleEnd"></div>
+    <div class="row" style="margin-top:18px">
+      <button class="btn btn-ghost grow" data-close>取消</button>
+      <button class="btn btn-primary grow" id="cycleSaveBtn">保存</button>
     </div>
   </div>
 </div>
@@ -758,7 +793,7 @@ function askConfirm(text, cb, btnOpt){
 $("#confirmOk").addEventListener("click", ()=>{ closeModal("#confirmModal"); if(confirmCb) confirmCb(); });
 
 /* ================= 导航 ================= */
-const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"每日阅读", calli:"软笔书法学习"};
+const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"每日阅读", calli:"软笔书法学习", cycle:"经期记录"};
 function switchPage(name){
   $$(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.page===name));
   $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-"+name));
@@ -1437,7 +1472,7 @@ function renderReads(){
   }
   box.innerHTML = reads.map(r=>`
     <div class="note-card">
-      <div class="book-name">📖 ${esc(r.book)}</div>
+      <div class="book-name"><span class="bn-ico">📖</span>${esc(r.book)}</div>
       ${r.quote? `<div class="quote-block">“${esc(r.quote)}”</div>` : ""}
       ${r.thought? `<div class="note-text" style="font-size:13.5px;color:var(--text-main)">💭 ${esc(r.thought)}</div>` : ""}
       <div class="note-foot">
@@ -1587,6 +1622,113 @@ $("#calliSaveBtn").addEventListener("click", ()=>{
   };
   if(file){ resizeImage(file, 1200, done); }
   else { done(oldImg); }
+});
+
+/* ================= 经期记录 ================= */
+let cycles = store.get("cycles", []);
+let editingCycleId = null;
+function saveCycles(){ store.set("cycles", cycles); }
+// 旧数据：用「持续天数」反推结束日期，保证历史记录仍显示起止
+(function(){
+  let migrated = false;
+  cycles = cycles.map(c=>{
+    if(c.dur && !c.end){
+      const n = parseInt(c.dur,10);
+      if(!isNaN(n) && n>0){
+        const d = new Date(c.date);
+        if(!isNaN(d)){
+          d.setDate(d.getDate() + n - 1);
+          c.end = d.toISOString().slice(0,10);
+          migrated = true;
+        }
+      }
+    }
+    return c;
+  });
+  if(migrated) saveCycles();
+})();
+function cycleDuration(start, end){
+  if(!start || !end) return null;
+  const s = new Date(start), e = new Date(end);
+  if(isNaN(s) || isNaN(e) || e < s) return null;
+  return Math.round((e - s)/86400000) + 1;
+}
+function resetCycleEdit(){
+  editingCycleId = null;
+  $("#cycleDate").value = todayKey();
+  $("#cycleEnd").value = "";
+  $("#cycleModalTitle").textContent = "🩸 新增经期记录";
+}
+function renderCycles(){
+  const box = $("#cycleList");
+  if(!cycles.length){
+    box.innerHTML = `<div class="empty"><span class="e-ico">🩸</span>暂无记录，点击「新增记录」开始记录吧</div>`;
+    return;
+  }
+  const sorted = cycles.slice().sort((a,b)=> a.date.localeCompare(b.date));
+  const withGap = sorted.map((c,i)=>{
+    let gap, gapNum = null;
+    if(i>0){
+      const diff = Math.round((new Date(c.date) - new Date(sorted[i-1].date)) / 86400000);
+      gap = diff + " 天";
+      gapNum = diff;
+    } else {
+      gap = "首次记录";
+    }
+    return Object.assign({}, c, {gap, gapNum});
+  });
+  const view = withGap.reverse();
+  box.innerHTML = view.map(c=>{
+    const dur = cycleDuration(c.date, c.end);
+    return `
+    <div class="diary-card">
+      <div class="cycle-row">
+        <div class="cycle-date">📅 ${esc(c.date)}${c.end ? " → " + esc(c.end) : ""}</div>
+        <span class="tag">⏱ ${dur!==null ? dur + " 天" : "未记录"}</span>
+      </div>
+      <div class="cycle-gap-row${(c.gapNum!==null && (c.gapNum>40||c.gapNum<30)) ? " warn" : ""}">
+        <span class="cycle-gap-text">距上一次周期：<b>${c.gap}</b></span>
+        <div class="cycle-actions">
+          <button class="icon-btn edit" data-edit="${c.id}">✏️</button>
+          <button class="icon-btn del" data-del="${c.id}">🗑️</button>
+        </div>
+      </div>
+    </div>`;
+  }).join("");
+  box.querySelectorAll("[data-del]").forEach(el=> el.addEventListener("click", ()=>{
+    askConfirm("删除这条经期记录？", ()=>{
+      cycles = cycles.filter(x=>x.id!==el.dataset.del);
+      saveCycles(); renderCycles(); toast("已删除");
+    });
+  }));
+  box.querySelectorAll("[data-edit]").forEach(el=> el.addEventListener("click", ()=>{
+    const c = cycles.find(x=>x.id===el.dataset.edit);
+    if(!c) return;
+    editingCycleId = c.id;
+    $("#cycleDate").value = c.date || todayKey();
+    $("#cycleEnd").value = c.end || "";
+    $("#cycleModalTitle").textContent = "🩸 修改经期记录";
+    openModal("#cycleModal");
+  }));
+}
+$("#cycleAddBtn").addEventListener("click", ()=>{ resetCycleEdit(); openModal("#cycleModal"); });
+$("#cycleModal").querySelector("[data-close]").addEventListener("click", resetCycleEdit);
+$("#cycleSaveBtn").addEventListener("click", ()=>{
+  const date = $("#cycleDate").value.trim() || todayKey();
+  const end = $("#cycleEnd").value.trim();
+  if(end && end < date){ toast("结束日期不能早于开始日期"); return; }
+  const wasEdit = !!editingCycleId;
+  if(editingCycleId){
+    const c = cycles.find(x=>x.id===editingCycleId);
+    if(c){ c.date = date; c.end = end; }
+  } else {
+    cycles.unshift({id:uid(), date, end, ts:Date.now()});
+  }
+  saveCycles();
+  resetCycleEdit();
+  closeModal("#cycleModal");
+  renderCycles();
+  toast(wasEdit ? "已更新 ✓" : "经期记录已保存 ✓");
 });
 
 /* ================= 数据导入 / 导出 ================= */
@@ -1772,6 +1914,7 @@ function init(){
   renderVideos();
   renderDiaries(); renderSports(); renderReads(); renderWeightChart();
   renderCallis();
+  renderCycles();
   requestNotify();
   checkMorningRemind();
 
