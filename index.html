@@ -495,12 +495,12 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
     <div class="nav-item" data-page="video"><span class="ico">🔥</span>爆款视频</div>
     <div class="nav-item" data-page="diary"><span class="ico">💡</span>灵感日记</div>
     <div class="nav-item" data-page="sport"><span class="ico">🏃</span>运动健身</div>
-    <div class="nav-item" data-page="read"><span class="ico">📖</span>阅读笔记</div>
+    <div class="nav-item" data-page="read"><span class="ico">📖</span>读书笔记</div>
     <div class="nav-item" data-page="calli"><span class="ico">🖌️</span>软笔书法学习</div>
     <div class="nav-item" data-page="cycle"><span class="ico">🩸</span>经期记录</div>
     <div class="side-ops">
-      <button class="side-btn" id="exportBtn">⬇️ 导出数据</button>
-      <button class="side-btn" id="importBtn">⬆️ 导入数据</button>
+      <button class="side-btn" id="exportBtn">⬆️ 导出数据</button>
+      <button class="side-btn" id="importBtn">⬇️ 导入数据</button>
       <input type="file" id="importFile" accept="application/json,.json" style="display:none">
     </div>
     <div class="sidebar-foot">数据仅存储在本机浏览器<br>私密安全 · 自动保存</div>
@@ -618,7 +618,7 @@ textarea{resize:vertical;min-height:110px;line-height:1.65}
 
     <!-- ========== 每日阅读 ========== -->
     <section class="page" id="page-read">
-      <div class="page-head"><h2>📖 阅读笔记</h2><p>好书、好句、好想法，都值得被记住</p></div>
+      <div class="page-head"><h2>📖 读书笔记</h2><p>好书、好句、好想法，都值得被记住</p></div>
       <button class="btn btn-primary add-note-btn" id="readAddBtn">✏️ 新增笔记</button>
       <div id="readList"></div>
     </section>
@@ -801,7 +801,7 @@ function askConfirm(text, cb, btnOpt){
 $("#confirmOk").addEventListener("click", ()=>{ closeModal("#confirmModal"); if(confirmCb) confirmCb(); });
 
 /* ================= 导航 ================= */
-const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"阅读笔记", calli:"软笔书法学习", cycle:"经期记录"};
+const pageTitles = {plan:"每日计划", video:"爆款视频", diary:"灵感日记", sport:"运动健身", read:"读书笔记", calli:"软笔书法学习", cycle:"经期记录"};
 function switchPage(name){
   $$(".nav-item").forEach(n => n.classList.toggle("active", n.dataset.page===name));
   $$(".page").forEach(p => p.classList.toggle("active", p.id === "page-"+name));
